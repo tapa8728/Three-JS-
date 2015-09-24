@@ -27,6 +27,7 @@
 	**	1. Create a vertex shader that returns the position off the vertex
 	*/
 	varying vec2 vUv;
+	uniform float time;
 	void main()
 	{
 		vUv = uv;
@@ -40,12 +41,13 @@
 	**	2. Set the color to yellow
 	*/
 	varying vec2 vUv;
+	uniform float time;
 	void main()
 
 	{
 		vec2 position = -1.0 + 2.0 * vUv;
 		float red = abs(position.x);
-		float green = abs(position.x * position.y);
+		float green = abs(position.x * position.y + time);
 		float blue = abs(position.y);
 		gl_FragColor = vec4(red, green, blue, 1.0);	
 	}
@@ -90,7 +92,12 @@
 	$container.append(renderer.domElement);
     /************ Now let's draw something! **********************/
 	// (11) Create a material for our object
+	var uniforms = {
+		time: {type: 'f', value: 0}
+	};
+
 	var shaderMaterial = new THREE.ShaderMaterial({
+		uniforms: uniforms,
 		vertexShader: $('#vertexshader').text(),
 		fragmentShader: $('#fragmentshader').text()
 	});
@@ -105,7 +112,7 @@
 	// (15) And the camera
 	scene.add(camera);
 	// (16) Create a point light
-	var pointLight = new THREE.PointLight(0xFFFFFF);
+	var pointLight = new THREE.PointLight(0x1A237E);
 	// (17) Put it somewhere
 	pointLight.position.x = 10;
 	pointLight.position.y = 50;
@@ -118,6 +125,7 @@
     	renderer.render(scene, camera);  
     	cube.rotation.x -= clock.getDelta();
     	cube.rotation.y -= clock.getDelta() + 0.06;
+    	uniforms.time.value += 0.001;
     	requestAnimationFrame(render);
        } 
      render();
