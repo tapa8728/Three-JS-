@@ -1,0 +1,117 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Getting Started with Three.js</title>
+		<!-- CSS Code-->
+		<style>
+			#container {
+				background: #000;
+                /*(1) Specify the canvas size*/
+                height: 600px;
+                width: 800px;
+                border: 1px solid black;
+			}
+		</style>
+	</head>
+	<body>
+
+		<div id="container">
+
+		</div>
+
+	</body>
+	<!-- Shader -->
+	<script type="x-shader/x-vertex" id="vertexshader">
+	/*
+	**	1. Create a vertex shader that returns the position off the vertex
+	*/
+	void main()
+	{
+		gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+
+	}
+	</script>
+
+	<script type="x-shader/x-fragment" id="fragmentshader">
+	/*
+	**	2. Set the color to yellow
+	*/
+	void main()
+	{
+		gl_FragColor = vec4(0.5, 0.5, 0, 1.0);	
+	}
+	</script>
+	<!-- End Shaders -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+    
+	<!--Importants all of the awesomeness of Three.js-->
+    <script src="http://threejs.org/build/three.min.js"></script>
+
+	<script type="text/javascript">
+        
+    /************** Set up the scene **********************/
+	// (2) Set the size of the container where we're going to be drawing things
+	var WIDTH = 800;
+	var HEIGHT = 600;
+        
+    // (3) Instatiate the scene
+    var scene = new THREE.Scene();	// Create a new instance of a three scene    
+	// (4) Get a place on the webpage to put the scene
+	var $container = $('#container');
+	// Camera helps us fly through the environment
+	// (5) Set some camera attributes
+	var CAMERA_ANGLE = 45; 	//45 degrees wrt the origin in our space
+	var ASPECT_RATIO = WIDTH/HEIGHT;
+	var NEAR_PLANE = 0.1; //clipping pplane slghtly in front of the camera
+	var FAR_PLANE = 10000;
+
+	// (6) Set-up a Camera
+	var camera = new THREE.PerspectiveCamera(
+		CAMERA_ANGLE,
+		ASPECT_RATIO,
+		NEAR_PLANE, FAR_PLANE
+		);
+	// (7) Put the camera somewhere useful
+	camera.position.z = 300;
+    // (8) Create a WebGL Renderer
+    var renderer = new THREE.WebGLRenderer();
+	// (9) Tell the renderer how many pixels it has to work with
+	renderer.setSize(WIDTH, HEIGHT);
+	// (10) Link the renderer to the webpage
+	$container.append(renderer.domElement);
+    /************ Now let's draw something! **********************/
+	// (11) Create a material for our object
+	var shaderMaterial = new THREE.ShaderMaterial({
+		vertexShader: $('#vertexshader').text(),
+		fragmentShader: $('#fragmentshader').text()
+	});
+
+	// (12) Define how finely we want to divide a sphere mesh
+	var cubeWidth = 75, cubeHeight = 75, cubeDepth =75;
+	// (13) Create a new mesh with sphere geometry
+	var cube = new THREE.Mesh(
+		new THREE.CubeGeometry(cubeWidth, cubeHeight, cubeDepth), shaderMaterial);
+	// (14) Add the sphere to the scene
+	scene.add(cube);
+	// (15) And the camera
+	scene.add(camera);
+	// (16) Create a point light
+	var pointLight = new THREE.PointLight(0xFFFFFF);
+	// (17) Put it somewhere
+	pointLight.position.x = 10;
+	pointLight.position.y = 50;
+	pointLight.position.z = 130;
+	// (18) Add the light to the scene
+	scene.add(pointLight);
+	// (19) Draw!
+	var clock = new THREE.Clock;
+	function render(){
+    	renderer.render(scene, camera);  
+    	cube.rotation.x -= clock.getDelta();
+    	cube.rotation.y -= clock.getDelta() + 0.06;
+    	requestAnimationFrame(render);
+       } 
+     render();
+	</script>
+</html>
