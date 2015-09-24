@@ -26,8 +26,10 @@
 	/*
 	**	1. Create a vertex shader that returns the position off the vertex
 	*/
+	varying vec2 vUv;
 	void main()
 	{
+		vUv = uv;
 		gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 
 	}
@@ -37,9 +39,15 @@
 	/*
 	**	2. Set the color to yellow
 	*/
+	varying vec2 vUv;
 	void main()
+
 	{
-		gl_FragColor = vec4(0.5, 0.5, 0, 1.0);	
+		vec2 position = -1.0 + 2.0 * vUv;
+		float red = abs(position.x);
+		float green = abs(position.x * position.y);
+		float blue = abs(position.y);
+		gl_FragColor = vec4(red, green, blue, 1.0);	
 	}
 	</script>
 	<!-- End Shaders -->
